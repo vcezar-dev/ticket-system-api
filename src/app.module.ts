@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { validateEnv } from './config/env.validation';
 import { UsersModule } from './users/users.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { UsersModule } from './users/users.module';
       validate: validateEnv,
     }),
     DatabaseModule,
+    CommonModule,
     UsersModule,
   ],
 })

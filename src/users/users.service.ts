@@ -5,12 +5,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { ResponseUserDto } from './dto/response-user.dto';
+import { HashingService } from '../common/hashing/hashing.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly hashingService: HashingService,
   ) {}
   private async findUserEntity(id: string): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id } });
@@ -21,7 +23,7 @@ export class UsersService {
   }
 
   async create(createUserDto: CreateUserDto): Promise<ResponseUserDto> {
-    const passwordHash = createUserDto.password;
+    const passwordHash = await this.hashingService.hash(createUserDto.password);
 
     const newUser = {
       email: createUserDto.email,
@@ -54,9 +56,14 @@ export class UsersService {
   ): Promise<ResponseUserDto> {
     const user = await this.findUserEntity(id);
 
-    // TODO: hash password before saving
+    if (updateUserDto.password) {
+      user.passwordHash = await this.hashingService.hash(
+        updateUserDto.password,
+      );
+    }
 
-    Object.assign(user, updateUserDto);
+    const { password: _, ...rest } = updateUserDto;
+    Object.assign(user, rest);
 
     const updated = await this.userRepository.save(user);
 

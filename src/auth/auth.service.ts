@@ -7,6 +7,7 @@ import { HashingService } from '../common/hashing/hashing.service';
 import type { ConfigType } from '@nestjs/config';
 import jwtConfig from '../config/jwt.config';
 import { JwtService } from '@nestjs/jwt';
+import { TokenPayloadDto } from './dto/token-payload.dto';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +19,38 @@ export class AuthService {
     private readonly userRepository: Repository<User>,
     private readonly hashingService: HashingService,
   ) {}
+  private async signJwtAsync(sub: string, expiresIn: number) {
+    return await this.jwtService.signAsync(
+      {
+        sub,
+      },
+      {
+        audience: this.jwtConfiguration.audience,
+        issuer: this.jwtConfiguration.issuer,
+        secret: this.jwtConfiguration.secret,
+        expiresIn,
+      },
+    );
+  }
+
+  private async createTokens(user: User) {
+    const accessTokenPromise = this.signJwtAsync(
+      user.id,
+      this.jwtConfiguration.accessTokenTtl,
+    );
+
+    const refreshTokenPromise = this.signJwtAsync(
+      user.id,
+      this.jwtConfiguration.refreshTokenTtl,
+    );
+
+    const [accessToken, refreshToken] = await Promise.all([
+      accessTokenPromise,
+      refreshTokenPromise,
+    ]);
+    return { accessToken, refreshToken };
+  }
+
   async login(signInDto: SignInDto) {
     const user = await this.userRepository.findOneBy({
       email: signInDto.email,
@@ -36,18 +69,16 @@ export class AuthService {
       throw new UnauthorizedException('Email or password invalid');
     }
 
-    const accessToken = await this.jwtService.signAsync(
-      {
-        sub: user.id,
-      },
-      {
-        audience: this.jwtConfiguration.audience,
-        issuer: this.jwtConfiguration.issuer,
-        secret: this.jwtConfiguration.secret,
-        expiresIn: this.jwtConfiguration.accessTokenTtl,
-      },
-    );
+    return this.createTokens(user);
+  }
 
-    return { accessToken };
+  async refresh(tokenPayloadDto: TokenPayloadDto) {
+    const user = await this.userRepository.findOneBy({
+      id: tokenPayloadDto.sub,
+    });
+
+    if (!user) throw new UnauthorizedException('User not found.');
+
+    return this.createTokens(user);
   }
 }

@@ -5,40 +5,33 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import jwtConfig from '../../config/jwt.config';
 import type { ConfigType } from '@nestjs/config';
 import { Request } from 'express';
 import { REQUEST_TOKEN_PAYLOAD_KEY } from '../constants/auth.constants';
-import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 import { TokenPayloadDto } from '../dto/token-payload.dto';
+import { RefreshTokenDto } from '../dto/refresh-token.dto';
 
 @Injectable()
-export class AccessTokenGuard implements CanActivate {
+export class RefreshTokenGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
     @Inject(jwtConfig.KEY)
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
-    private readonly reflector: Reflector,
   ) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
-
-    if (isPublic) return true;
-
     const request: Request = context.switchToHttp().getRequest();
+    const { refreshToken } = request.body as RefreshTokenDto;
 
-    const token = request.headers.authorization?.split(' ')[1];
-
-    if (!token) throw new UnauthorizedException('Token not found.');
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token not found.');
+    }
 
     try {
       const payload: TokenPayloadDto = await this.jwtService.verifyAsync(
-        token,
+        refreshToken,
         this.jwtConfiguration,
       );
 
@@ -46,7 +39,7 @@ export class AccessTokenGuard implements CanActivate {
 
       return true;
     } catch {
-      throw new UnauthorizedException('Invalid or expired token');
+      throw new UnauthorizedException('Invalid or expired token.');
     }
   }
 }

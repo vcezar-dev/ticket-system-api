@@ -7,7 +7,7 @@ export default registerAs(
     ({
       type: 'postgres',
       host: process.env.DATABASE_HOST,
-      port: Number(process.env.DATABASE_PORT) || 5432,
+      port: Number(process.env.DATABASE_PORT),
       username: process.env.DATABASE_USERNAME,
       database: process.env.DATABASE_DATABASE,
       password: process.env.DATABASE_PASSWORD,

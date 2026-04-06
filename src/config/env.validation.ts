@@ -16,6 +16,13 @@ const envSchema = z.object({
   DATABASE_DATABASE: z.string(),
   DATABASE_PASSWORD: z.string(),
   DATABASE_LOGGING: booleanFromString.default(false),
+
+  // jwt
+  JWT_SECRET: z.string(),
+  JWT_AUDIENCE: z.string(),
+  JWT_ISSUER: z.string(),
+  JWT_ACCESS_TOKEN_TTL: z.coerce.number().default(3600),
+  JWT_REFRESH_TOKEN_TTL: z.coerce.number().default(604800),
 });
 
 export function validateEnv(config: Record<string, unknown>) {

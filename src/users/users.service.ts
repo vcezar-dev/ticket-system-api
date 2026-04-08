@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,6 +10,8 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { ResponseUserDto } from './dto/response-user.dto';
 import { HashingService } from '../common/hashing/hashing.service';
+import { TokenPayloadDto } from '../auth/dto/token-payload.dto';
+import { Role } from './enums/role.enum';
 
 @Injectable()
 export class UsersService {
@@ -44,7 +50,14 @@ export class UsersService {
     return users.map((user) => new ResponseUserDto(user));
   }
 
-  async findOne(id: string): Promise<ResponseUserDto> {
+  async findOne(
+    id: string,
+    tokenPayloadDto: TokenPayloadDto,
+  ): Promise<ResponseUserDto> {
+    if (tokenPayloadDto.sub !== id && tokenPayloadDto.role !== Role.Admin) {
+      throw new ForbiddenException();
+    }
+
     const user = await this.findUserEntity(id);
 
     return new ResponseUserDto(user);
@@ -53,7 +66,12 @@ export class UsersService {
   async update(
     id: string,
     updateUserDto: UpdateUserDto,
+    tokenPayloadDto: TokenPayloadDto,
   ): Promise<ResponseUserDto> {
+    if (tokenPayloadDto.sub !== id && tokenPayloadDto.role !== Role.Admin) {
+      throw new ForbiddenException();
+    }
+
     const user = await this.findUserEntity(id);
 
     if (updateUserDto.password) {

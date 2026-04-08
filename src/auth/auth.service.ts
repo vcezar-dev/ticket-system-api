@@ -8,6 +8,7 @@ import type { ConfigType } from '@nestjs/config';
 import jwtConfig from '../config/jwt.config';
 import { JwtService } from '@nestjs/jwt';
 import { TokenPayloadDto } from './dto/token-payload.dto';
+import { Role } from '../users/enums/role.enum';
 
 @Injectable()
 export class AuthService {
@@ -19,10 +20,11 @@ export class AuthService {
     private readonly userRepository: Repository<User>,
     private readonly hashingService: HashingService,
   ) {}
-  private async signJwtAsync(sub: string, expiresIn: number) {
+  private async signJwtAsync(sub: string, role: Role, expiresIn: number) {
     return await this.jwtService.signAsync(
       {
         sub,
+        role,
       },
       {
         audience: this.jwtConfiguration.audience,
@@ -34,19 +36,17 @@ export class AuthService {
   }
 
   private async createTokens(user: User) {
-    const accessTokenPromise = this.signJwtAsync(
-      user.id,
-      this.jwtConfiguration.accessTokenTtl,
-    );
-
-    const refreshTokenPromise = this.signJwtAsync(
-      user.id,
-      this.jwtConfiguration.refreshTokenTtl,
-    );
-
     const [accessToken, refreshToken] = await Promise.all([
-      accessTokenPromise,
-      refreshTokenPromise,
+      this.signJwtAsync(
+        user.id,
+        user.role,
+        this.jwtConfiguration.accessTokenTtl,
+      ),
+      this.signJwtAsync(
+        user.id,
+        user.role,
+        this.jwtConfiguration.refreshTokenTtl,
+      ),
     ]);
     return { accessToken, refreshToken };
   }

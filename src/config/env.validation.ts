@@ -34,8 +34,6 @@ function validateEnv(config: Record<string, unknown>) {
     );
   }
 
-  console.log(result.data);
-
   return result.data;
 }
 

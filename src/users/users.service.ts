@@ -20,7 +20,7 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
     private readonly hashingService: HashingService,
   ) {}
-  private async findUserEntity(id: string): Promise<User> {
+  async findOneEntity(id: string): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id } });
 
     if (!user) throw new NotFoundException('User not found.');
@@ -58,7 +58,7 @@ export class UsersService {
       throw new ForbiddenException();
     }
 
-    const user = await this.findUserEntity(id);
+    const user = await this.findOneEntity(id);
 
     return new ResponseUserDto(user);
   }
@@ -72,7 +72,7 @@ export class UsersService {
       throw new ForbiddenException();
     }
 
-    const user = await this.findUserEntity(id);
+    const user = await this.findOneEntity(id);
 
     if (updateUserDto.password) {
       user.passwordHash = await this.hashingService.hash(
@@ -89,7 +89,7 @@ export class UsersService {
   }
 
   async remove(id: string): Promise<ResponseUserDto> {
-    const user = await this.findUserEntity(id);
+    const user = await this.findOneEntity(id);
 
     const response = new ResponseUserDto(user);
 

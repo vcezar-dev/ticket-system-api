@@ -1,9 +1,9 @@
 import * as z from 'zod';
 
-const booleanFromString = z
-  .string()
-  .transform((val) => val.trim() === 'true')
-  .or(z.boolean());
+const booleanFromString = z.union([
+  z.boolean(),
+  z.enum(['true', 'false']).transform((val) => val === 'true'),
+]);
 
 const envSchema = z.object({
   // api
@@ -25,7 +25,7 @@ const envSchema = z.object({
   JWT_REFRESH_TOKEN_TTL: z.coerce.number().default(604800),
 });
 
-export function validateEnv(config: Record<string, unknown>) {
+function validateEnv(config: Record<string, unknown>) {
   const result = envSchema.safeParse(config);
 
   if (!result.success) {
@@ -34,7 +34,9 @@ export function validateEnv(config: Record<string, unknown>) {
     );
   }
 
-  Object.assign(process.env, result.data);
+  console.log(result.data);
 
   return result.data;
 }
+
+export const env = validateEnv(process.env);

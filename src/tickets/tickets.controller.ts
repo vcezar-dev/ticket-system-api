@@ -18,11 +18,22 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '../users/enums/role.enum';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreateTicket,
+  ApiDeleteTicket,
+  ApiFindAllTickets,
+  ApiUpdateTicket,
+  ApiUpdateTicketStatus,
+} from './decorators/api-tickets.decorator';
 
+@ApiBearerAuth()
+@ApiTags('tickets')
 @Controller('tickets')
 export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}
 
+  @ApiCreateTicket()
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(
@@ -32,11 +43,13 @@ export class TicketsController {
     return this.ticketsService.create(createTicketDto, tokenPayloadDto);
   }
 
+  @ApiFindAllTickets()
   @Get()
   findAll(@ActiveUser() tokenPayloadDto: TokenPayloadDto) {
     return this.ticketsService.findAll(tokenPayloadDto);
   }
 
+  @ApiUpdateTicket()
   @Patch(':id')
   update(
     @Param('id', ParseUUIDPipe) id: string,
@@ -46,6 +59,7 @@ export class TicketsController {
     return this.ticketsService.update(id, updateTicketDto, tokenPayloadDto);
   }
 
+  @ApiUpdateTicketStatus()
   @Roles(Role.Admin, Role.Agent)
   @Patch(':id/status')
   updateStatus(
@@ -55,6 +69,7 @@ export class TicketsController {
     return this.ticketsService.updateStatus(id, updateStatusDto);
   }
 
+  @ApiDeleteTicket()
   @Roles(Role.Admin)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)

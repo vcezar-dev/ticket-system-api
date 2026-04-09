@@ -13,11 +13,20 @@ import { ActiveUser } from '../auth/decorators/active-user.decorator';
 import { TokenPayloadDto } from '../auth/dto/token-payload.dto';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreateComment,
+  ApiDeleteComment,
+  ApiFindAllComments,
+} from './decorators/api-comments.decorator';
 
+@ApiBearerAuth()
+@ApiTags('comments')
 @Controller('tickets/:ticketId/comments')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
+  @ApiCreateComment()
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(
@@ -32,6 +41,7 @@ export class CommentsController {
     );
   }
 
+  @ApiFindAllComments()
   @Get()
   findAll(
     @Param('ticketId', ParseUUIDPipe) ticketId: string,
@@ -40,6 +50,7 @@ export class CommentsController {
     return this.commentsService.findAll(ticketId, tokenPayloadDto);
   }
 
+  @ApiDeleteComment()
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   delete(

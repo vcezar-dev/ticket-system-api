@@ -171,6 +171,30 @@ npm run docker:down       # Stop and remove PostgreSQL container
 
 ---
 
+## 🌱 Seed
+
+To populate the database with sample data (users, tickets and comments):
+
+```bash
+npm run seed
+```
+
+To clear all seed data:
+
+```bash
+npm run seed:clear
+```
+
+### Default credentials
+
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@ticketsystem.com | Admin@1234 |
+| Agent | agent@ticketsystem.com | Agent@1234 |
+| User | john@ticketsystem.com | User@1234 |
+
+---
+
 ## 📄 License
 
 This project is open source and available under the [MIT License](LICENSE).

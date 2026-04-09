@@ -8,6 +8,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AccessTokenGuard } from './auth/guards/access-token.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { TicketsModule } from './tickets/tickets.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { TicketsModule } from './tickets/tickets.module';
     CommonModule,
     UsersModule,
     TicketsModule,
+    CommentsModule,
   ],
   providers: [
     {

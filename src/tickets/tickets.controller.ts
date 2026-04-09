@@ -13,7 +13,7 @@ import {
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { ActiveUser } from '../auth/decorators/active-user.decorator';
 import { TokenPayloadDto } from '../auth/dto/token-payload.dto';
-import { TicketService } from './tickets.service';
+import { TicketsService } from './tickets.service';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '../users/enums/role.enum';
 import { UpdateStatusDto } from './dto/update-status.dto';
@@ -21,7 +21,7 @@ import { UpdateTicketDto } from './dto/update-ticket.dto';
 
 @Controller('tickets')
 export class TicketsController {
-  constructor(private readonly ticketsService: TicketService) {}
+  constructor(private readonly ticketsService: TicketsService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)

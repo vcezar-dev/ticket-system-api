@@ -1,18 +1,8 @@
-import { User } from '../../users/entities/user.entity';
+import { ResponseUserSummaryDto } from '../../common/dto/response-user-summary.dto';
 import { Ticket } from '../entities/ticket.entity';
 import { Category } from '../enums/category.enum';
 import { Priority } from '../enums/priority.enum';
 import { Status } from '../enums/status.enum';
-
-export class ResponseUserSummaryDto {
-  id!: string;
-  name!: string;
-
-  constructor(user: User) {
-    this.id = user.id;
-    this.name = user.name;
-  }
-}
 
 export class ResponseTicketDto {
   id!: string;

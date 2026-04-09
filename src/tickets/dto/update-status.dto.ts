@@ -3,9 +3,9 @@ import { Status } from '../enums/status.enum';
 
 export class UpdateStatusDto {
   @IsEnum(Status)
-  status!: Status;
+  readonly status!: Status;
 
   @IsUUID()
   @IsOptional()
-  assignedTo?: string;
+  readonly assignedTo?: string;
 }

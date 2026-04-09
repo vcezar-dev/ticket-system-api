@@ -6,15 +6,15 @@ export class CreateTicketDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(100)
-  title!: string;
+  readonly title!: string;
 
   @IsString()
   @MaxLength(500)
-  description!: string;
+  readonly description!: string;
 
   @IsEnum(Priority)
-  priority!: Priority;
+  readonly priority!: Priority;
 
   @IsEnum(Category)
-  category!: Category;
+  readonly category!: Category;
 }

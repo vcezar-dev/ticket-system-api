@@ -17,13 +17,13 @@ import { Status } from './enums/status.enum';
 import { ResponseTicketDto } from './dto/response-ticket.dto';
 
 @Injectable()
-export class TicketService {
+export class TicketsService {
   constructor(
     @InjectRepository(Ticket)
     private readonly ticketRepository: Repository<Ticket>,
     private readonly userService: UsersService,
   ) {}
-  private async findOneTicketEntity(id: string): Promise<Ticket> {
+  async findOneEntity(id: string): Promise<Ticket> {
     const ticket = await this.ticketRepository.findOne({
       where: { id },
       relations: ['createdBy'],
@@ -75,7 +75,7 @@ export class TicketService {
     id: string,
     updateStatusDto: UpdateStatusDto,
   ): Promise<ResponseTicketDto> {
-    const ticket = await this.findOneTicketEntity(id);
+    const ticket = await this.findOneEntity(id);
 
     if (
       ticket?.status === Status.Closed ||
@@ -104,11 +104,12 @@ export class TicketService {
     updateTicketDto: UpdateTicketDto,
     tokenPayloadDto: TokenPayloadDto,
   ): Promise<ResponseTicketDto> {
-    const ticket = await this.findOneTicketEntity(id);
+    const ticket = await this.findOneEntity(id);
 
     if (
       tokenPayloadDto.sub !== ticket.createdBy?.id &&
-      tokenPayloadDto.role !== Role.Admin
+      tokenPayloadDto.role !== Role.Admin &&
+      tokenPayloadDto.role !== Role.Agent
     ) {
       throw new ForbiddenException();
     }
@@ -121,7 +122,7 @@ export class TicketService {
   }
 
   async delete(id: string): Promise<void> {
-    const ticket = await this.findOneTicketEntity(id);
+    const ticket = await this.findOneEntity(id);
 
     await this.ticketRepository.remove(ticket);
   }

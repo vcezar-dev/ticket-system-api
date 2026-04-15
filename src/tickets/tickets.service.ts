@@ -21,7 +21,7 @@ export class TicketsService {
   constructor(
     @InjectRepository(Ticket)
     private readonly ticketRepository: Repository<Ticket>,
-    private readonly userService: UsersService,
+    private readonly usersService: UsersService,
   ) {}
   async findOneEntity(id: string): Promise<Ticket> {
     const ticket = await this.ticketRepository.findOne({
@@ -40,7 +40,7 @@ export class TicketsService {
     createTicketDto: CreateTicketDto,
     tokenPayloadDto: TokenPayloadDto,
   ): Promise<ResponseTicketDto> {
-    const user = await this.userService.findOneEntity(tokenPayloadDto.sub);
+    const user = await this.usersService.findOneEntity(tokenPayloadDto.sub);
 
     const ticket = this.ticketRepository.create({
       ...createTicketDto,
@@ -85,7 +85,7 @@ export class TicketsService {
     }
 
     if (updateStatusDto.assignedTo) {
-      const assignedUser = await this.userService.findOneEntity(
+      const assignedUser = await this.usersService.findOneEntity(
         updateStatusDto.assignedTo,
       );
       ticket.assignedTo = assignedUser;

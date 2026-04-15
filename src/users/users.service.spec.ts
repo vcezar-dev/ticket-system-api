@@ -124,13 +124,13 @@ describe('UsersService', () => {
 
   describe('findOne', () => {
     it('should return a user', async () => {
-      const mockTokenPayload = createMockTokenPayload({ sub: TEST_UUID });
+      const mockTokenPayloadDto = createMockTokenPayload({ sub: TEST_UUID });
 
       const mockUser = createMockUser({ id: TEST_UUID });
 
       jest.spyOn(usersService, 'findOneEntity').mockResolvedValue(mockUser);
 
-      const result = await usersService.findOne(TEST_UUID, mockTokenPayload);
+      const result = await usersService.findOne(TEST_UUID, mockTokenPayloadDto);
 
       expect(usersService.findOneEntity).toHaveBeenCalledWith(TEST_UUID);
 
@@ -140,26 +140,26 @@ describe('UsersService', () => {
     it('should return forbidden when user is not the owner', async () => {
       const mockUser = createMockUser();
 
-      const mockTokenPayload = createMockTokenPayload({ sub: 'other-uuid' });
+      const mockTokenPayloadDto = createMockTokenPayload({ sub: 'other-uuid' });
 
       jest.spyOn(usersService, 'findOneEntity').mockResolvedValue(mockUser);
 
       await expect(
-        usersService.findOne(TEST_UUID, mockTokenPayload),
+        usersService.findOne(TEST_UUID, mockTokenPayloadDto),
       ).rejects.toThrow(ForbiddenException);
     });
 
     it('should allow admin to access other user', async () => {
       const mockUser = createMockUser();
 
-      const mockTokenPayload = createMockTokenPayload({
+      const mockTokenPayloadDto = createMockTokenPayload({
         sub: 'other-uuid',
         role: Role.Admin,
       });
 
       jest.spyOn(usersService, 'findOneEntity').mockResolvedValue(mockUser);
 
-      const result = await usersService.findOne(TEST_UUID, mockTokenPayload);
+      const result = await usersService.findOne(TEST_UUID, mockTokenPayloadDto);
 
       expect(result).toEqual(new ResponseUserDto(mockUser));
     });
@@ -167,7 +167,7 @@ describe('UsersService', () => {
 
   describe('update', () => {
     it('should update a user', async () => {
-      const mockTokenPayload = createMockTokenPayload();
+      const mockTokenPayloadDto = createMockTokenPayload();
 
       const mockUpdateUserDto: UpdateUserDto = {
         email: 'user@email.com',
@@ -187,7 +187,7 @@ describe('UsersService', () => {
       const result = await usersService.update(
         TEST_UUID,
         mockUpdateUserDto,
-        mockTokenPayload,
+        mockTokenPayloadDto,
       );
 
       expect(usersService.findOneEntity).toHaveBeenCalledWith(TEST_UUID);
@@ -202,7 +202,7 @@ describe('UsersService', () => {
         name: 'username',
       };
 
-      const mockTokenPayload = createMockTokenPayload({ role: Role.Admin });
+      const mockTokenPayloadDto = createMockTokenPayload({ role: Role.Admin });
 
       const mockUser = createMockUser({ id: 'other-uuid' });
 
@@ -217,7 +217,7 @@ describe('UsersService', () => {
       const result = await usersService.update(
         TEST_UUID,
         mockUpdateUserDto,
-        mockTokenPayload,
+        mockTokenPayloadDto,
       );
 
       expect(usersService.findOneEntity).toHaveBeenCalledWith(TEST_UUID);
@@ -229,7 +229,7 @@ describe('UsersService', () => {
     it('should update user password', async () => {
       const mockUser = createMockUser();
 
-      const mockTokenPayload = createMockTokenPayload();
+      const mockTokenPayloadDto = createMockTokenPayload();
 
       const mockUpdateUserDto: UpdateUserDto = {
         password: 'password',
@@ -251,7 +251,7 @@ describe('UsersService', () => {
       const result = await usersService.update(
         TEST_UUID,
         mockUpdateUserDto,
-        mockTokenPayload,
+        mockTokenPayloadDto,
       );
 
       expect(usersService.findOneEntity).toHaveBeenCalledWith(TEST_UUID);
@@ -273,12 +273,12 @@ describe('UsersService', () => {
 
       const mockUser = createMockUser();
 
-      const mockTokenPayload = createMockTokenPayload({ sub: 'other-uuid' });
+      const mockTokenPayloadDto = createMockTokenPayload({ sub: 'other-uuid' });
 
       jest.spyOn(usersService, 'findOneEntity').mockResolvedValue(mockUser);
 
       await expect(
-        usersService.update(TEST_UUID, mockUpdateUserDto, mockTokenPayload),
+        usersService.update(TEST_UUID, mockUpdateUserDto, mockTokenPayloadDto),
       ).rejects.toThrow(ForbiddenException);
     });
   });

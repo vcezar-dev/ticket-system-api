@@ -1,5 +1,4 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { SignInDto } from './dto/sign-in.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { Repository } from 'typeorm';
@@ -9,6 +8,7 @@ import jwtConfig from '../config/jwt.config';
 import { JwtService } from '@nestjs/jwt';
 import { TokenPayloadDto } from './dto/token-payload.dto';
 import { Role } from '../users/enums/role.enum';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -51,9 +51,9 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async login(signInDto: SignInDto) {
+  async login(loginDto: LoginDto) {
     const user = await this.userRepository.findOneBy({
-      email: signInDto.email,
+      email: loginDto.email,
     });
 
     if (!user || !user.passwordHash) {
@@ -61,7 +61,7 @@ export class AuthService {
     }
 
     const isPasswordValid = await this.hashingService.compare(
-      signInDto.password,
+      loginDto.password,
       user.passwordHash,
     );
 

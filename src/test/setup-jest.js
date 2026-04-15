@@ -1,0 +1,8 @@
+process.env.DATABASE_HOST = 'localhost';
+process.env.DATABASE_PORT = '5432';
+process.env.DATABASE_USERNAME = 'test';
+process.env.DATABASE_DATABASE = 'test_db';
+process.env.DATABASE_PASSWORD = 'test_pass';
+process.env.JWT_SECRET = 'test-secret';
+process.env.JWT_AUDIENCE = 'http://localhost:3000';
+process.env.JWT_ISSUER = 'http://localhost:3000';

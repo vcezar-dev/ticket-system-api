@@ -1,5 +1,5 @@
 import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
-import { SignInDto } from './dto/sign-in.dto';
+import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
 import { Public } from './decorators/public.decorator';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
@@ -16,8 +16,8 @@ export class AuthController {
   @ApiSignInAuth()
   @Public()
   @Post('login')
-  login(@Body() signInDto: SignInDto) {
-    return this.authService.login(signInDto);
+  login(@Body() loginDto: LoginDto) {
+    return this.authService.login(loginDto);
   }
 
   @ApiRefreshAuth()

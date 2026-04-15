@@ -1,4 +1,4 @@
-import { TEST_UUID } from '../../test/constants/test.constants';
+import { TEST_UUID } from '../test/constants/test.constants';
 import { TokenPayloadDto } from '../auth/dto/token-payload.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ResponseUserDto } from './dto/response-user.dto';
@@ -16,6 +16,7 @@ describe('UsersController', () => {
   };
 
   beforeEach(() => {
+    jest.clearAllMocks();
     controller = new UsersController(usersServiceMock as any);
   });
 

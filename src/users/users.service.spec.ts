@@ -8,12 +8,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { ResponseUserDto } from './dto/response-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import {
-  createMockTokenPayload,
-  createMockUser,
-} from '../../test/factories/user.factory';
-import { TEST_UUID } from '../../test/constants/test.constants';
+import { TEST_UUID } from '../test/constants/test.constants';
 import { Role } from './enums/role.enum';
+import { createMockUser } from '../test/factories/user.factory';
+import { createMockTokenPayload } from '../test/factories/auth.factory';
 
 describe('UsersService', () => {
   let usersService: UsersService;
@@ -125,7 +123,7 @@ describe('UsersService', () => {
   });
 
   describe('findOne', () => {
-    it('should return an user', async () => {
+    it('should return a user', async () => {
       const mockTokenPayload = createMockTokenPayload({ sub: TEST_UUID });
 
       const mockUser = createMockUser({ id: TEST_UUID });
@@ -168,7 +166,7 @@ describe('UsersService', () => {
   });
 
   describe('update', () => {
-    it('should update an user', async () => {
+    it('should update a user', async () => {
       const mockTokenPayload = createMockTokenPayload();
 
       const mockUpdateUserDto: UpdateUserDto = {
@@ -286,7 +284,7 @@ describe('UsersService', () => {
   });
 
   describe('remove', () => {
-    it('should remove an user', async () => {
+    it('should remove a user', async () => {
       const mockUser = createMockUser({ id: TEST_UUID });
 
       jest.spyOn(usersService, 'findOneEntity').mockResolvedValue(mockUser);

@@ -9,19 +9,18 @@ import { ApiTags } from '@nestjs/swagger';
 import { ApiRefreshAuth, ApiSignInAuth } from './decorators/api-auth.decorator';
 
 @ApiTags('auth')
+@Public()
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @ApiSignInAuth()
-  @Public()
   @Post('login')
   login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
 
   @ApiRefreshAuth()
-  @Public()
   @UseGuards(RefreshTokenGuard)
   @Post('refresh')
   refresh(@ActiveUser() tokenPayloadDto: TokenPayloadDto) {

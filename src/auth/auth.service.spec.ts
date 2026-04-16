@@ -12,6 +12,7 @@ import { LoginDto } from './dto/login.dto';
 import { UnauthorizedException } from '@nestjs/common';
 import { TokenPayloadDto } from './dto/token-payload.dto';
 import {
+  createMockJwtConfig,
   createMockLoginDto,
   createMockTokenPayload,
   createTokenSignArgs,
@@ -30,13 +31,7 @@ describe('AuthService', () => {
         AuthService,
         {
           provide: jwtConfig.KEY,
-          useValue: {
-            secret: 'test-secret',
-            audience: 'http://localhost:3000',
-            issuer: 'http://localhost:3000',
-            accessTokenTtl: 3600,
-            refreshTokenTtl: 604800,
-          },
+          useValue: createMockJwtConfig(),
         },
         {
           provide: JwtService,

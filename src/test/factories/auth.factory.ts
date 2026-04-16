@@ -60,3 +60,14 @@ export const createMockLoginDto = (
   password: 'password-test',
   ...overrides,
 });
+
+export const createMockJwtConfig = (
+  overrides?: Partial<ConfigType<typeof jwtConfig>>,
+): ConfigType<typeof jwtConfig> => ({
+  secret: 'test-secret',
+  audience: 'http://localhost:3000',
+  issuer: 'http://localhost:3000',
+  accessTokenTtl: 3600,
+  refreshTokenTtl: 604800,
+  ...overrides,
+});

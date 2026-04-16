@@ -262,7 +262,7 @@ describe('TicketsService', () => {
       expect(result).toEqual(new ResponseTicketDto(mockTicketUpdated));
     });
 
-    it('should throw ForbiddenException when user not the owner or has role Admin/Agent', async () => {
+    it('should throw ForbiddenException when user is not the owner or has role Admin/Agent', async () => {
       const mockUpdateTicketDto: UpdateTicketDto = {};
 
       const mockTokenPayloadDto = createMockTokenPayload({

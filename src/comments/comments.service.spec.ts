@@ -61,7 +61,7 @@ describe('CommentsService', () => {
   });
 
   describe('create', () => {
-    it('should create a comment on a ticket.', async () => {
+    it('should create a comment on a ticket', async () => {
       const mockCreateCommentDto: CreateCommentDto = {
         content: 'test comment',
       };
@@ -98,7 +98,7 @@ describe('CommentsService', () => {
       expect(result).toEqual(new ResponseCommentDto(mockComment));
     });
 
-    it('should throw ForbiddenException when user is not the owner or has role Admin/Agent', async () => {
+    it('should throw ForbiddenException when user is not the owner and not an admin or agent', async () => {
       const mockCreateCommentDto = {} as CreateCommentDto;
       const mockTokenPayloadDto = createMockTokenPayload({
         sub: 'other-uuid',
@@ -153,7 +153,7 @@ describe('CommentsService', () => {
   });
 
   describe('findAll', () => {
-    it('should return all comments from a ticket', async () => {
+    it('should return all comments associated with the ticket', async () => {
       const mockTokenPayloadDto = createMockTokenPayload();
       const mockTicket = createMockTicket({ id: TEST_UUID });
 

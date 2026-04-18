@@ -36,7 +36,7 @@ describe('RolesGuard', () => {
   });
 
   describe('canActivate', () => {
-    it('should be allow user to access if he has the required role', () => {
+    it('should allow user to access if they have the required role', () => {
       const mockContext = {
         switchToHttp: () => ({
           getRequest: () => ({
@@ -58,7 +58,7 @@ describe('RolesGuard', () => {
       expect(result).toBe(true);
     });
 
-    it('should be allow user to access if the route do not has requirements', () => {
+    it('should allow access if route has no role requirements', () => {
       const mockContext = {
         switchToHttp: () => ({
           getRequest: () => ({
@@ -94,7 +94,7 @@ describe('RolesGuard', () => {
       );
     });
 
-    it('should throw ForbiddenException when user do not has a required role', () => {
+    it('should throw ForbiddenException when user does not have required role', () => {
       const mockContext = {
         switchToHttp: () => ({
           getRequest: () => ({

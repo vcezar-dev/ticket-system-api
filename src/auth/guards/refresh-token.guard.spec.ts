@@ -44,7 +44,7 @@ describe('RefreshTokenGuard', () => {
   });
 
   describe('canActivate', () => {
-    it('should refresh token jwt', async () => {
+    it('should validate refresh token and attach payload to request', async () => {
       const mockRequestPayload = {
         body: {
           refreshToken: 'valid_refresh_token',

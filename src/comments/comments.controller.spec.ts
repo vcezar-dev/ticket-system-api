@@ -1,78 +1,73 @@
-import { TokenPayloadDto } from '../auth/dto/token-payload.dto';
 import { TEST_COMMENT_UUID, TEST_UUID } from '../test/constants/test.constants';
+import { Role } from '../users/enums/role.enum';
 import { CommentsController } from './comments.controller';
-import { CreateCommentDto } from './dto/create-comment.dto';
-import { ResponseCommentDto } from './dto/response-comment.dto';
+import { CommentsService } from './comments.service';
 
 describe('CommentsController', () => {
   let controller: CommentsController;
-
-  const mockCommentsService = {
-    create: jest.fn(),
-    findAll: jest.fn(),
-    delete: jest.fn(),
-  };
+  let service: jest.Mocked<CommentsService>;
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    controller = new CommentsController(mockCommentsService as any);
+    service = {
+      create: jest.fn(),
+      findAll: jest.fn(),
+      delete: jest.fn(),
+    } as any;
+
+    controller = new CommentsController(service);
   });
 
   it('CommentsController should be defined', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should call create with correct arguments', async () => {
-    const mockCreateCommentDto = {} as CreateCommentDto;
-    const mockTokenPayloadDto = {} as TokenPayloadDto;
-    const mockResponse = {} as ResponseCommentDto;
+  it('should create a comment', async () => {
+    const dto = { content: 'test comment' };
+    const tokenPayload = { sub: 'user-uuid' };
+    const ticketId = 'ticket-uuid';
 
-    jest.spyOn(mockCommentsService, 'create').mockResolvedValue(mockResponse);
+    const createdComment = { id: 'comment-uuid', ...dto };
 
-    const result = await controller.create(
-      TEST_UUID,
-      mockCreateCommentDto,
-      mockTokenPayloadDto,
-    );
+    service.create.mockResolvedValue(createdComment);
 
-    expect(mockCommentsService.create).toHaveBeenCalledWith(
-      TEST_UUID,
-      mockCreateCommentDto,
-      mockTokenPayloadDto,
-    );
-    expect(result).toEqual(mockResponse);
+    const result = await controller.create(ticketId, dto, tokenPayload);
+
+    expect(service.create).toHaveBeenCalledWith(ticketId, dto, tokenPayload);
+    expect(result).toEqual(createdComment);
   });
 
-  it('should call findAll with correct arguments', async () => {
-    const mockTokenPayloadDto = {} as TokenPayloadDto;
-    const mockResponse = [] as ResponseCommentDto[];
+  it('should return all comments for a ticket', async () => {
+    const tokenPayload = { sub: 'user-uuid', role: Role.Admin };
+    const tickets = [
+      {
+        id: 'ticket-1-uuid',
+        title: 'ticket-1-title',
+      },
+      {
+        id: 'ticket-2-uuid',
+        title: 'ticket-2-title',
+      },
+    ];
 
-    jest.spyOn(mockCommentsService, 'findAll').mockResolvedValue(mockResponse);
+    service.findAll.mockResolvedValue(tickets);
 
-    const result = await controller.findAll(TEST_UUID, mockTokenPayloadDto);
+    const result = await controller.findAll(TEST_UUID, tokenPayload);
 
-    expect(mockCommentsService.findAll).toHaveBeenCalledWith(
-      TEST_UUID,
-      mockTokenPayloadDto,
-    );
-    expect(result).toEqual(mockResponse);
+    expect(service.findAll).toHaveBeenCalledWith(TEST_UUID, tokenPayload);
+    expect(result).toEqual(tickets);
   });
 
-  it('should call delete with correct arguments', async () => {
-    const mockTokenPayloadDto = {} as TokenPayloadDto;
+  it('should delete a comment', async () => {
+    const dto = { content: 'test comment' };
 
-    jest.spyOn(mockCommentsService, 'delete').mockResolvedValue(undefined);
+    service.delete.mockResolvedValue(undefined);
 
-    const result = await controller.delete(
+    const result = await controller.delete(TEST_UUID, TEST_COMMENT_UUID, dto);
+
+    expect(service.delete).toHaveBeenCalledWith(
       TEST_UUID,
       TEST_COMMENT_UUID,
-      mockTokenPayloadDto,
-    );
-
-    expect(mockCommentsService.delete).toHaveBeenCalledWith(
-      TEST_UUID,
-      TEST_COMMENT_UUID,
-      mockTokenPayloadDto,
+      dto,
     );
     expect(result).toBeUndefined();
   });

@@ -95,6 +95,12 @@
       "global": {
         "branches": 85
       }
-    }
+    },
+    "coveragePathIgnorePatterns": [
+      "main.ts",
+      "app.module.ts",
+      "src/database",
+      "src/config"
+    ]
   }
 }

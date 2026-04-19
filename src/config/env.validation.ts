@@ -8,6 +8,8 @@ const booleanFromString = z.union([
 const envSchema = z.object({
   // api
   PORT: z.coerce.number().default(3000),
+  NODE_ENV: z.string(),
+  CORS_ORIGIN: z.string().default('http://localhost:3000'),
 
   // database
   DATABASE_HOST: z.string(),
@@ -23,6 +25,9 @@ const envSchema = z.object({
   JWT_ISSUER: z.string(),
   JWT_ACCESS_TOKEN_TTL: z.coerce.number().default(3600),
   JWT_REFRESH_TOKEN_TTL: z.coerce.number().default(604800),
+
+  THROTTLE_TTL: z.coerce.number(),
+  THROTTLE_LIMIT: z.coerce.number(),
 });
 
 function validateEnv(config: Record<string, unknown>) {

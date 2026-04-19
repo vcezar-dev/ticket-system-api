@@ -7,6 +7,7 @@ import { ActiveUser } from './decorators/active-user.decorator';
 import { TokenPayloadDto } from './dto/token-payload.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiRefreshAuth, ApiSignInAuth } from './decorators/api-auth.decorator';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('auth')
 @Public()
@@ -14,6 +15,7 @@ import { ApiRefreshAuth, ApiSignInAuth } from './decorators/api-auth.decorator';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Throttle({ default: { ttl: 60000, limit: 5 } })
   @ApiSignInAuth()
   @Post('login')
   login(@Body() loginDto: LoginDto) {

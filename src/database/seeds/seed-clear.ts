@@ -1,8 +1,9 @@
 import 'dotenv/config';
 import { AppDataSource } from '../data-source';
+import { env } from '../../config/env.validation';
 
 async function clearSeed() {
-  if (process.env.NODE_ENV === 'production') {
+  if (env.NODE_ENV === 'production') {
     console.error('Cannot run seed:clear in production');
     process.exit(1);
   }

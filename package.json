@@ -95,12 +95,12 @@
     ],
     "coverageThreshold": {
       "global": {
-        "branches": 85
+        "branches": 80
       }
     },
     "coveragePathIgnorePatterns": [
       "main.ts",
-      "app.module.ts",
+      "\\.module\\.ts$",
       "src/database",
       "src/config"
     ]

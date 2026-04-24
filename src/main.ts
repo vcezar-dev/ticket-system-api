@@ -1,33 +1,13 @@
 import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { DatabaseExceptionFilter } from './common/filters/database-exception.filter';
-import helmet from 'helmet';
-import { env } from './config/env.validation';
+import { setupApp } from './app.setup';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.use(helmet());
-
-  app.enableCors({
-    origin: env.CORS_ORIGIN,
-    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-  });
-
-  app.useGlobalFilters(new DatabaseExceptionFilter());
-
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    }),
-  );
+  setupApp(app);
 
   const config = new DocumentBuilder()
     .setTitle('Ticket System API')

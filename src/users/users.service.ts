@@ -88,13 +88,9 @@ export class UsersService {
     return new ResponseUserDto(updated);
   }
 
-  async remove(id: string): Promise<ResponseUserDto> {
+  async remove(id: string): Promise<void> {
     const user = await this.findOneEntity(id);
 
-    const response = new ResponseUserDto(user);
-
     await this.userRepository.remove(user);
-
-    return response;
   }
 }

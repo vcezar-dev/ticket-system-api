@@ -1,0 +1,10 @@
+process.env.DATABASE_HOST = 'localhost';
+process.env.DATABASE_PORT = '5436';
+process.env.DATABASE_USERNAME = 'postgres'
+process.env.DATABASE_DATABASE = 'ticket_system_test'
+process.env.DATABASE_PASSWORD = 'postgres'
+process.env.JWT_SECRET = 'dev_secret_key_change_in_production'
+process.env.JWT_AUDIENCE = 'http://localhost:3000';
+process.env.JWT_ISSUER = 'http://localhost:3000';
+process.env.THROTTLE_TTL = '60000';
+process.env.THROTTLE_LIMIT = '60';

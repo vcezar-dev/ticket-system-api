@@ -20,12 +20,14 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
     "migration:generate": "typeorm-ts-node-commonjs migration:generate src/database/migrations/migration -d src/database/data-source.ts",
     "migration:run": "typeorm-ts-node-commonjs migration:run -d src/database/data-source.ts",
     "migration:revert": "typeorm-ts-node-commonjs migration:revert -d src/database/data-source.ts",
     "seed": "ts-node -r tsconfig-paths/register src/database/seeds/seed.ts",
-    "seed:clear": "ts-node -r tsconfig-paths/register src/database/seeds/seed-clear.ts"
+    "seed:clear": "ts-node -r tsconfig-paths/register src/database/seeds/seed-clear.ts",
+    "docker:test:up": "docker compose -p ticket-system-api -f docker-compose.yml up -d postgres-test",
+    "docker:test:down": "docker compose -p ticket-system-api -f docker-compose.yml down postgres-test",
+    "test:e2e": "npm run docker:test:up && npx jest --config test/jest-e2e.json"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

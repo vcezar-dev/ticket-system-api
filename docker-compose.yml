@@ -16,6 +16,24 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  postgres-test:
+    image: postgres:16
+    container_name: ${TEST_CONTAINER_NAME}
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${TEST_POSTGRES_DB}
+      POSTGRES_USER: ${TEST_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${TEST_POSTGRES_PASSWORD}
+    ports:
+      - '${TEST_POSTGRES_PORT}:5432'
+    volumes:
+      - pgdata-test:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${TEST_POSTGRES_USER} -d ${TEST_POSTGRES_DB}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   pgdata:
+  pgdata-test:

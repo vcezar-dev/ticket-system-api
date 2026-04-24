@@ -6,3 +6,5 @@ process.env.DATABASE_PASSWORD = 'test_pass';
 process.env.JWT_SECRET = 'test-secret';
 process.env.JWT_AUDIENCE = 'http://localhost:3000';
 process.env.JWT_ISSUER = 'http://localhost:3000';
+process.env.THROTTLE_TTL = '60000';
+process.env.THROTTLE_LIMIT = '60';

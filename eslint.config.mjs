@@ -10,6 +10,7 @@ export default tseslint.config(
       'eslint.config.mjs',
       'src/database/migrations/**',
       'src/test/setup-jest.js',
+      'test/setup-e2e.js',
     ],
   },
   eslint.configs.recommended,

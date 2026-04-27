@@ -14,6 +14,7 @@ export async function createTestApp() {
   await app.init();
 
   const dataSource = moduleFixture.get(DataSource);
+  await dataSource.dropDatabase();
   await dataSource.runMigrations();
 
   return { app, dataSource, moduleFixture };

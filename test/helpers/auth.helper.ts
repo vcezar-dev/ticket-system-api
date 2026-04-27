@@ -46,3 +46,26 @@ export async function getAccessToken(
   const body = response.body as { accessToken: string };
   return body.accessToken;
 }
+
+export async function seedUser(
+  moduleFixture: TestingModule,
+  overrides?: Partial<User>,
+  password?: string,
+) {
+  const dataSource = moduleFixture.get(DataSource);
+  const userRepository = dataSource.getRepository(User);
+
+  const passwordHash = await bcrypt.hash(
+    password || 'secret-password',
+    await bcrypt.genSalt(),
+  );
+
+  await userRepository.save({
+    id: randomUUID(),
+    name: 'user',
+    email: 'user@email.com',
+    passwordHash,
+    role: Role.User,
+    ...overrides,
+  });
+}

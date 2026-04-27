@@ -27,7 +27,7 @@
     "seed:clear": "ts-node -r tsconfig-paths/register src/database/seeds/seed-clear.ts",
     "docker:test:up": "docker compose -p ticket-system-api -f docker-compose.yml up -d postgres-test",
     "docker:test:down": "docker compose -p ticket-system-api -f docker-compose.yml down postgres-test",
-    "test:e2e": "npm run docker:test:up && npx jest --config test/jest-e2e.json"
+    "test:e2e": "npm run docker:test:up && npx jest --config test/jest-e2e.json --runInBand"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

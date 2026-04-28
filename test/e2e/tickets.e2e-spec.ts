@@ -11,21 +11,17 @@ import { Status } from '../../src/tickets/enums/status.enum';
 import { seedTicket } from '../helpers/tickets.helper';
 import { adminOverrides, agentOverrides } from '../constants/e2e.constants';
 import { randomUUID } from 'crypto';
+import { UserSummary } from '../interfaces/user-summary.interface';
 
-interface userSummary {
-  id: string;
-  name: string;
-}
-
-interface ticketsResponse {
+interface TicketsResponse {
   id: string;
   title: string;
   description: string;
   status: Status;
   priority: Priority;
   category: Category;
-  createdBy: userSummary | null;
-  assignedTo: userSummary | null;
+  createdBy: UserSummary | null;
+  assignedTo: UserSummary | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -68,7 +64,7 @@ describe('tickets (e2e)', () => {
 
       expect(response.status).toBe(HttpStatus.CREATED);
 
-      const body = response.body as ticketsResponse;
+      const body = response.body as TicketsResponse;
 
       expect(body).toEqual(
         expect.objectContaining({
@@ -120,7 +116,7 @@ describe('tickets (e2e)', () => {
 
       expect(response.status).toBe(HttpStatus.OK);
 
-      const body = response.body as ticketsResponse[];
+      const body = response.body as TicketsResponse[];
 
       expect(body.length).toBeGreaterThan(0);
 
@@ -161,7 +157,7 @@ describe('tickets (e2e)', () => {
 
       expect(response.status).toBe(HttpStatus.OK);
 
-      const body = response.body as ticketsResponse[];
+      const body = response.body as TicketsResponse[];
 
       expect(body.length).toBeGreaterThan(0);
     });
@@ -195,7 +191,7 @@ describe('tickets (e2e)', () => {
 
       expect(response.status).toBe(HttpStatus.OK);
 
-      const body = response.body as ticketsResponse;
+      const body = response.body as TicketsResponse;
 
       expect(body).toEqual(
         expect.objectContaining({
@@ -240,7 +236,7 @@ describe('tickets (e2e)', () => {
 
       expect(response.status).toBe(HttpStatus.OK);
 
-      const body = response.body as ticketsResponse;
+      const body = response.body as TicketsResponse;
 
       expect(body).toEqual(
         expect.objectContaining({
@@ -323,7 +319,7 @@ describe('tickets (e2e)', () => {
 
       expect(response.status).toBe(HttpStatus.OK);
 
-      const body = response.body as ticketsResponse;
+      const body = response.body as TicketsResponse;
 
       expect(body).toEqual(
         expect.objectContaining({
@@ -368,7 +364,7 @@ describe('tickets (e2e)', () => {
 
       expect(response.status).toBe(HttpStatus.OK);
 
-      const body = response.body as ticketsResponse;
+      const body = response.body as TicketsResponse;
 
       expect(body).toEqual(
         expect.objectContaining({
@@ -412,7 +408,7 @@ describe('tickets (e2e)', () => {
 
       expect(response.status).toBe(HttpStatus.OK);
 
-      const body = response.body as ticketsResponse;
+      const body = response.body as TicketsResponse;
 
       expect(body).toEqual(
         expect.objectContaining({

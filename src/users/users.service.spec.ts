@@ -294,7 +294,7 @@ describe('UsersService', () => {
 
       expect(usersService.findOneEntity).toHaveBeenCalledWith(TEST_UUID);
       expect(userRepository.remove).toHaveBeenCalledWith(mockUser);
-      expect(result).toEqual(new ResponseUserDto(mockUser));
+      expect(result).toBeUndefined();
     });
   });
 });

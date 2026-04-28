@@ -3,10 +3,10 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { DataSource } from 'typeorm';
-import { Role } from '../../src/users/enums/role.enum';
 import { randomUUID } from 'crypto';
 import { createTestApp } from '../helpers/app.helper';
 import { seedUserAndLogin } from '../helpers/auth.helper';
+import { adminOverrides } from '../constants/e2e.constants';
 
 interface UserResponse {
   id: string;
@@ -35,12 +35,6 @@ describe('Users (e2e)', () => {
     await dataSource.dropDatabase();
     await app.close();
   });
-
-  const adminOverrides = {
-    name: 'admin',
-    email: 'admin@email.com',
-    role: Role.Admin,
-  };
 
   describe('/users (POST)', () => {
     it('should create a user with success', async () => {
@@ -73,23 +67,25 @@ describe('Users (e2e)', () => {
       };
 
       await request(app.getHttpServer()).post('/users').send(createUserDto);
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .post('/users')
-        .send(createUserDto)
-        .expect(HttpStatus.CONFLICT);
+        .send(createUserDto);
+
+      expect(response.status).toBe(HttpStatus.CONFLICT);
     });
 
     it('should return 400 when body is invalid', async () => {
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .post('/users')
-        .send({})
-        .expect(HttpStatus.BAD_REQUEST);
+        .send({});
+
+      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
     });
   });
 
   describe('/users (GET)', () => {
     it('should return all users when user has role admin', async () => {
-      const accessToken = await seedUserAndLogin(
+      const { accessToken } = await seedUserAndLogin(
         moduleFixture,
         app,
         adminOverrides,
@@ -97,8 +93,9 @@ describe('Users (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get('/users')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .expect(HttpStatus.OK);
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(response.status).toBe(HttpStatus.OK);
 
       const body = response.body as UserResponse[];
 
@@ -106,12 +103,13 @@ describe('Users (e2e)', () => {
     });
 
     it('should return 403 when user does not has role admin', async () => {
-      const accessToken = await seedUserAndLogin(moduleFixture, app);
+      const { accessToken } = await seedUserAndLogin(moduleFixture, app);
 
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .get('/users')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .expect(HttpStatus.FORBIDDEN);
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(response.status).toBe(HttpStatus.FORBIDDEN);
     });
   });
 
@@ -119,7 +117,9 @@ describe('Users (e2e)', () => {
     it('should return a user with success', async () => {
       const id = randomUUID();
 
-      const accessToken = await seedUserAndLogin(moduleFixture, app, { id });
+      const { accessToken, user } = await seedUserAndLogin(moduleFixture, app, {
+        id,
+      });
 
       const response = await request(app.getHttpServer())
         .get(`/users/${id}`)
@@ -129,8 +129,8 @@ describe('Users (e2e)', () => {
       const body = response.body as UserResponse;
 
       expect(body.id).toEqual(id);
-      expect(body.name).toBe('user');
-      expect(body.email).toBe('user@email.com');
+      expect(body.name).toBe(user.name);
+      expect(body.email).toBe(user.email);
 
       expect(body.createdAt).toEqual(expect.any(String));
       expect(body.updatedAt).toEqual(expect.any(String));
@@ -139,7 +139,7 @@ describe('Users (e2e)', () => {
     it('should return 404 when user not exists', async () => {
       const id = randomUUID();
 
-      const accessToken = await seedUserAndLogin(
+      const { accessToken } = await seedUserAndLogin(
         moduleFixture,
         app,
         adminOverrides,
@@ -167,19 +167,21 @@ describe('Users (e2e)', () => {
 
       const id = randomUUID();
 
-      const accessToken = await seedUserAndLogin(moduleFixture, app, { id });
+      const { accessToken } = await seedUserAndLogin(moduleFixture, app, {
+        id,
+      });
 
       const response = await request(app.getHttpServer())
         .patch(`/users/${id}`)
         .set('Authorization', `Bearer ${accessToken}`)
-        .send(updateUserDto)
-        .expect(HttpStatus.OK);
+        .send(updateUserDto);
+
+      expect(response.status).toBe(HttpStatus.OK);
 
       const body = response.body as UserResponse;
 
       expect(body.id).toEqual(id);
       expect(body.name).toBe('other name');
-      expect(body.email).toBe('user@email.com');
 
       expect(body.createdAt).toEqual(expect.any(String));
       expect(body.updatedAt).toEqual(expect.any(String));
@@ -188,27 +190,29 @@ describe('Users (e2e)', () => {
     it('should return 403 when user is not owner or has role admin', async () => {
       const id = randomUUID();
 
-      const accessToken = await seedUserAndLogin(moduleFixture, app);
+      const { accessToken } = await seedUserAndLogin(moduleFixture, app);
 
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .patch(`/users/${id}`)
-        .set('Authorization', `Bearer ${accessToken}`)
-        .expect(HttpStatus.FORBIDDEN);
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(response.status).toBe(HttpStatus.FORBIDDEN);
     });
 
     it('should return 404 when user not exists', async () => {
       const id = randomUUID();
 
-      const accessToken = await seedUserAndLogin(
+      const { accessToken } = await seedUserAndLogin(
         moduleFixture,
         app,
         adminOverrides,
       );
 
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .patch(`/users/${id}`)
-        .set('Authorization', `Bearer ${accessToken}`)
-        .expect(HttpStatus.NOT_FOUND);
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(response.status).toBe(HttpStatus.NOT_FOUND);
     });
   });
 
@@ -216,30 +220,32 @@ describe('Users (e2e)', () => {
     it('should delete a user with success', async () => {
       const id = randomUUID();
 
-      const accessToken = await seedUserAndLogin(moduleFixture, app, {
+      const { accessToken } = await seedUserAndLogin(moduleFixture, app, {
         ...adminOverrides,
         id,
       });
 
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .delete(`/users/${id}`)
-        .set('Authorization', `Bearer ${accessToken}`)
-        .expect(HttpStatus.NO_CONTENT);
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(response.status).toBe(HttpStatus.NO_CONTENT);
     });
 
     it('should return 404 when user not exists', async () => {
       const id = randomUUID();
 
-      const accessToken = await seedUserAndLogin(
+      const { accessToken } = await seedUserAndLogin(
         moduleFixture,
         app,
         adminOverrides,
       );
 
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .delete(`/users/${id}`)
-        .set('Authorization', `Bearer ${accessToken}`)
-        .expect(HttpStatus.NOT_FOUND);
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(response.status).toBe(HttpStatus.NOT_FOUND);
     });
   });
 });

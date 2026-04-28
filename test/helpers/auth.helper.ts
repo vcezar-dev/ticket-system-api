@@ -20,16 +20,20 @@ export async function seedUserAndLogin(
     await bcrypt.genSalt(),
   );
 
-  const { email } = await userRepository.save({
+  const name = randomUUID().slice(0, 8);
+
+  const user = await userRepository.save({
     id: randomUUID(),
-    name: 'user',
-    email: 'user@email.com',
+    name: name,
+    email: `${name}@email.com`,
     passwordHash,
     role: Role.User,
     ...overrides,
   });
 
-  return getAccessToken(app, email, 'secret-password');
+  const accessToken = await getAccessToken(app, user.email, 'secret-password');
+
+  return { accessToken, user };
 }
 
 export async function getAccessToken(
@@ -51,7 +55,7 @@ export async function seedUser(
   moduleFixture: TestingModule,
   overrides?: Partial<User>,
   password?: string,
-) {
+): Promise<User> {
   const dataSource = moduleFixture.get(DataSource);
   const userRepository = dataSource.getRepository(User);
 
@@ -60,12 +64,16 @@ export async function seedUser(
     await bcrypt.genSalt(),
   );
 
-  await userRepository.save({
+  const name = randomUUID().slice(0, 8);
+
+  const user = await userRepository.save({
     id: randomUUID(),
-    name: 'user',
-    email: 'user@email.com',
+    name: name,
+    email: `${name}@email.com`,
     passwordHash,
     role: Role.User,
     ...overrides,
   });
+
+  return user;
 }

@@ -15,7 +15,7 @@ import { Throttle } from '@nestjs/throttler';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Throttle({ default: { ttl: 60000, limit: 10 } })
+  @Throttle({ default: { ttl: 60000, limit: 20 } })
   @ApiSignInAuth()
   @Post('login')
   login(@Body() loginDto: LoginDto) {

@@ -87,7 +87,9 @@ Copy `.env.example` to `.env` and fill in the values:
 
 ```bash
 # Application
+NODE_ENV=development
 PORT=3000
+CORS_ORIGIN=http://localhost:3000
 
 # PostgreSQL Container
 CONTAINER_NAME=ticket-system-api-postgres
@@ -192,6 +194,21 @@ npm run seed:clear
 | Admin | admin@ticketsystem.com | Admin@1234 |
 | Agent | agent@ticketsystem.com | Agent@1234 |
 | User | john@ticketsystem.com | User@1234 |
+
+---
+
+## 🧪 Tests
+
+```bash
+# Unit tests
+npm run test
+
+# Unit tests with coverage
+npm run test:cov
+
+# E2E tests
+npm run test:e2e
+```
 
 ---
 

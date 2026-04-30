@@ -21,6 +21,7 @@ import { Role } from '../users/enums/role.enum';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { Status } from './enums/status.enum';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
+import { createMockPagination } from '../test/factories/pagination.factory';
 
 describe('TicketsService', () => {
   let ticketsService: TicketsService;
@@ -124,12 +125,18 @@ describe('TicketsService', () => {
       const mockTokenPayloadDto = createMockTokenPayload();
 
       const mockTickets = [createMockTicket()];
+      const mockPagination = createMockPagination();
 
       jest.spyOn(ticketRepository, 'find').mockResolvedValue(mockTickets);
 
-      const result = await ticketsService.findAll(mockTokenPayloadDto);
+      const result = await ticketsService.findAll(
+        mockTokenPayloadDto,
+        mockPagination,
+      );
 
       expect(ticketRepository.find).toHaveBeenCalledWith({
+        take: mockPagination.limit,
+        skip: (mockPagination.page - 1) * mockPagination.limit,
         relations: ['createdBy'],
         where: { createdBy: { id: mockTokenPayloadDto.sub } },
       });
@@ -142,13 +149,19 @@ describe('TicketsService', () => {
       const mockTokenPayloadDto = createMockTokenPayload({ role: Role.Admin });
 
       const mockTickets = [createMockTicket()];
+      const mockPagination = createMockPagination();
 
       jest.spyOn(ticketRepository, 'find').mockResolvedValue(mockTickets);
 
-      const result = await ticketsService.findAll(mockTokenPayloadDto);
+      const result = await ticketsService.findAll(
+        mockTokenPayloadDto,
+        mockPagination,
+      );
 
       expect(ticketRepository.find).toHaveBeenCalledWith({
         relations: ['createdBy'],
+        take: mockPagination.limit,
+        skip: (mockPagination.page - 1) * mockPagination.limit,
       });
       expect(result).toEqual(
         mockTickets.map((ticket) => new ResponseTicketDto(ticket)),

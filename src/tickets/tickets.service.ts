@@ -15,6 +15,7 @@ import { UsersService } from '../users/users.service';
 import { Role } from '../users/enums/role.enum';
 import { Status } from './enums/status.enum';
 import { ResponseTicketDto } from './dto/response-ticket.dto';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 @Injectable()
 export class TicketsService {
@@ -54,9 +55,12 @@ export class TicketsService {
 
   async findAll(
     tokenPayloadDto: TokenPayloadDto,
+    paginationDto: PaginationDto,
   ): Promise<ResponseTicketDto[]> {
     if (tokenPayloadDto.role === Role.User) {
       const tickets = await this.ticketRepository.find({
+        take: paginationDto.limit,
+        skip: (paginationDto.page - 1) * paginationDto.limit,
         where: { createdBy: { id: tokenPayloadDto.sub } },
         relations: ['createdBy'],
       });
@@ -65,6 +69,8 @@ export class TicketsService {
     }
 
     const tickets = await this.ticketRepository.find({
+      take: paginationDto.limit,
+      skip: (paginationDto.page - 1) * paginationDto.limit,
       relations: ['createdBy'],
     });
 

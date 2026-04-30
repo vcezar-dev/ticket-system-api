@@ -12,6 +12,7 @@ import { TEST_UUID } from '../test/constants/test.constants';
 import { Role } from './enums/role.enum';
 import { createMockUser } from '../test/factories/user.factory';
 import { createMockTokenPayload } from '../test/factories/auth.factory';
+import { createMockPagination } from '../test/factories/pagination.factory';
 
 describe('UsersService', () => {
   let usersService: UsersService;
@@ -86,11 +87,16 @@ describe('UsersService', () => {
         { id: 'test-uuid', name: 'username', email: 'user@email.com' },
       ] as User[];
 
+      const mockPagination = createMockPagination();
+
       jest.spyOn(userRepository, 'find').mockResolvedValue(mockUsers);
 
-      const result = await usersService.findAll();
+      const result = await usersService.findAll(mockPagination);
 
-      expect(userRepository.find).toHaveBeenCalled();
+      expect(userRepository.find).toHaveBeenCalledWith({
+        take: mockPagination.limit,
+        skip: (mockPagination.page - 1) * mockPagination.limit,
+      });
 
       expect(result).toEqual(
         mockUsers.map((user) => new ResponseUserDto(user)),

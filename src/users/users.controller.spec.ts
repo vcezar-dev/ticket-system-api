@@ -4,6 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { ResponseUserDto } from './dto/response-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersController } from './users.controller';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -38,12 +39,13 @@ describe('UsersController', () => {
 
   it('should call findAll with correct arguments', async () => {
     const mockResponse = [] as ResponseUserDto[];
+    const mockPagination = {} as PaginationDto;
 
     jest.spyOn(usersServiceMock, 'findAll').mockResolvedValue(mockResponse);
 
-    const result = await controller.findAll();
+    const result = await controller.findAll(mockPagination);
 
-    expect(usersServiceMock.findAll).toHaveBeenCalledWith();
+    expect(usersServiceMock.findAll).toHaveBeenCalledWith(mockPagination);
     expect(result).toBe(mockResponse);
   });
 

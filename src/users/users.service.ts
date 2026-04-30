@@ -12,6 +12,7 @@ import { ResponseUserDto } from './dto/response-user.dto';
 import { HashingService } from '../common/hashing/hashing.service';
 import { TokenPayloadDto } from '../auth/dto/token-payload.dto';
 import { Role } from './enums/role.enum';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 @Injectable()
 export class UsersService {
@@ -44,8 +45,11 @@ export class UsersService {
     return new ResponseUserDto(user);
   }
 
-  async findAll(): Promise<ResponseUserDto[]> {
-    const users = await this.userRepository.find();
+  async findAll(paginationDto: PaginationDto): Promise<ResponseUserDto[]> {
+    const users = await this.userRepository.find({
+      take: paginationDto.limit,
+      skip: (paginationDto.page - 1) * paginationDto.limit,
+    });
 
     return users.map((user) => new ResponseUserDto(user));
   }

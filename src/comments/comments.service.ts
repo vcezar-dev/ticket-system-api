@@ -13,6 +13,7 @@ import { Role } from '../users/enums/role.enum';
 import { UsersService } from '../users/users.service';
 import { Ticket } from '../tickets/entities/ticket.entity';
 import { ResponseCommentDto } from './dto/response-comment.dto';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 @Injectable()
 export class CommentsService {
@@ -59,12 +60,15 @@ export class CommentsService {
   async findAll(
     ticketId: string,
     tokenPayloadDto: TokenPayloadDto,
+    paginationDto: PaginationDto,
   ): Promise<ResponseCommentDto[]> {
     const ticket = await this.ticketsService.findOneEntity(ticketId);
 
     this.checkTicketAccess(ticket, tokenPayloadDto);
 
     const comments = await this.commentRepository.find({
+      take: paginationDto.limit,
+      skip: (paginationDto.page - 1) * paginationDto.limit,
       where: { ticket: { id: ticketId } },
       relations: ['author', 'ticket'],
     });

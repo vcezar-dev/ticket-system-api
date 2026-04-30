@@ -9,6 +9,7 @@ import {
   HttpCode,
   HttpStatus,
   ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -26,6 +27,7 @@ import {
   ApiFindOneUser,
   ApiUpdateUser,
 } from './decorators/api-users.decorator';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -44,8 +46,8 @@ export class UsersController {
   @ApiBearerAuth()
   @Roles(Role.Admin)
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.usersService.findAll(paginationDto);
   }
 
   @ApiFindOneUser()

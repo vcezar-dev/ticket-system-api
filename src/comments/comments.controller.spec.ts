@@ -48,12 +48,21 @@ describe('CommentsController', () => {
         title: 'ticket-2-title',
       },
     ];
+    const pagination = { page: 1, limit: 10 };
 
     service.findAll.mockResolvedValue(tickets);
 
-    const result = await controller.findAll(TEST_UUID, tokenPayload);
+    const result = await controller.findAll(
+      TEST_UUID,
+      tokenPayload,
+      pagination,
+    );
 
-    expect(service.findAll).toHaveBeenCalledWith(TEST_UUID, tokenPayload);
+    expect(service.findAll).toHaveBeenCalledWith(
+      TEST_UUID,
+      tokenPayload,
+      pagination,
+    );
     expect(result).toEqual(tickets);
   });
 

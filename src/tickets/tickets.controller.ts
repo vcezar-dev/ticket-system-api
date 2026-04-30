@@ -9,6 +9,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { ActiveUser } from '../auth/decorators/active-user.decorator';
@@ -26,6 +27,7 @@ import {
   ApiUpdateTicket,
   ApiUpdateTicketStatus,
 } from './decorators/api-tickets.decorator';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 @ApiBearerAuth()
 @ApiTags('tickets')
@@ -45,8 +47,11 @@ export class TicketsController {
 
   @ApiFindAllTickets()
   @Get()
-  findAll(@ActiveUser() tokenPayloadDto: TokenPayloadDto) {
-    return this.ticketsService.findAll(tokenPayloadDto);
+  findAll(
+    @ActiveUser() tokenPayloadDto: TokenPayloadDto,
+    @Query() paginationDto: PaginationDto,
+  ) {
+    return this.ticketsService.findAll(tokenPayloadDto, paginationDto);
   }
 
   @ApiUpdateTicket()

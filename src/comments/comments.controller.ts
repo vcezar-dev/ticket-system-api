@@ -8,6 +8,7 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ActiveUser } from '../auth/decorators/active-user.decorator';
 import { TokenPayloadDto } from '../auth/dto/token-payload.dto';
@@ -19,6 +20,7 @@ import {
   ApiDeleteComment,
   ApiFindAllComments,
 } from './decorators/api-comments.decorator';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 @ApiBearerAuth()
 @ApiTags('comments')
@@ -46,8 +48,13 @@ export class CommentsController {
   findAll(
     @Param('ticketId', ParseUUIDPipe) ticketId: string,
     @ActiveUser() tokenPayloadDto: TokenPayloadDto,
+    @Query() paginationDto: PaginationDto,
   ) {
-    return this.commentsService.findAll(ticketId, tokenPayloadDto);
+    return this.commentsService.findAll(
+      ticketId,
+      tokenPayloadDto,
+      paginationDto,
+    );
   }
 
   @ApiDeleteComment()

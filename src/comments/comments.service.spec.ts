@@ -14,6 +14,7 @@ import { ResponseCommentDto } from './dto/response-comment.dto';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Role } from '../users/enums/role.enum';
 import { createMockComment } from '../test/factories/comment.factory';
+import { createMockPagination } from '../test/factories/pagination.factory';
 
 describe('CommentsService', () => {
   let commentsService: CommentsService;
@@ -158,6 +159,7 @@ describe('CommentsService', () => {
       const mockTicket = createMockTicket({ id: TEST_UUID });
 
       const mockComments = [createMockComment()];
+      const mockPagination = createMockPagination();
 
       jest.spyOn(ticketsService, 'findOneEntity').mockResolvedValue(mockTicket);
       jest.spyOn(commentRepository, 'find').mockResolvedValue(mockComments);
@@ -165,10 +167,13 @@ describe('CommentsService', () => {
       const result = await commentsService.findAll(
         TEST_UUID,
         mockTokenPayloadDto,
+        mockPagination,
       );
 
       expect(ticketsService.findOneEntity).toHaveBeenCalledWith(TEST_UUID);
       expect(commentRepository.find).toHaveBeenCalledWith({
+        take: mockPagination.limit,
+        skip: (mockPagination.page - 1) * mockPagination.limit,
         where: { ticket: { id: TEST_UUID } },
         relations: ['author', 'ticket'],
       });

@@ -1,4 +1,5 @@
 import { TokenPayloadDto } from '../auth/dto/token-payload.dto';
+import { PaginationDto } from '../common/dto/pagination.dto';
 import { TEST_UUID } from '../test/constants/test.constants';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { ResponseTicketDto } from './dto/response-ticket.dto';
@@ -47,12 +48,16 @@ describe('TicketsController', () => {
   it('should call findAll with correct arguments', async () => {
     const mockTokenPayload = {} as TokenPayloadDto;
     const mockResponse = [] as ResponseTicketDto[];
+    const mockPagination = {} as PaginationDto;
 
     jest.spyOn(ticketsServiceMock, 'findAll').mockResolvedValue(mockResponse);
 
-    const result = await controller.findAll(mockTokenPayload);
+    const result = await controller.findAll(mockTokenPayload, mockPagination);
 
-    expect(ticketsServiceMock.findAll).toHaveBeenCalledWith(mockTokenPayload);
+    expect(ticketsServiceMock.findAll).toHaveBeenCalledWith(
+      mockTokenPayload,
+      mockPagination,
+    );
     expect(result).toBe(mockResponse);
   });
 

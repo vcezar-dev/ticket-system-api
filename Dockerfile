@@ -24,4 +24,7 @@ COPY --from=builder /app/dist ./dist
 
 EXPOSE 3000
 
-CMD ["node", "dist/main"]
+COPY start.sh .
+RUN chmod +x start.sh
+
+CMD ["sh", "start.sh"]

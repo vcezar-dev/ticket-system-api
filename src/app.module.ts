@@ -10,6 +10,7 @@ import { RolesGuard } from './auth/guards/roles.guard';
 import { TicketsModule } from './tickets/tickets.module';
 import { CommentsModule } from './comments/comments.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
       isGlobal: true,
     }),
     DatabaseModule,
+    HealthModule,
     AuthModule,
     CommonModule,
     UsersModule,

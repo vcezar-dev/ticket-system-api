@@ -18,11 +18,11 @@ async function bootstrap() {
     .addTag('users', 'User management')
     .addTag('tickets', 'Ticket management')
     .addTag('comments', 'Ticket comments')
+    .addTag('health', 'Health check')
     .build();
 
   SwaggerModule.setup('docs', app, SwaggerModule.createDocument(app, config));
 
   await app.listen(process.env.PORT ?? 3000);
-  console.log(`Application is running on PORT: ${process.env.PORT}`);
 }
 bootstrap();

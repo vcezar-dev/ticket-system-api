@@ -49,9 +49,10 @@ cd ticket-system-api
 
 ```bash
 cp .env.example .env
+cp .env.docker.example .env.docker
 ```
 
-Fill in the `.env` file with your values. See the [Environment Variables](#-environment-variables) section for details.
+Fill in both files with your values. See the [Environment Variables](#-environment-variables) section for details.
 
 ### 3. Install dependencies
 
@@ -59,21 +60,25 @@ Fill in the `.env` file with your values. See the [Environment Variables](#-envi
 npm install
 ```
 
-### 4. Start the database and run the application
+### 4. Start the database
 
 ```bash
-npm run dev
+docker compose up -d
 ```
 
-This command starts the PostgreSQL container and the NestJS application in watch mode.
+### 5. Start the application
 
-### 5. Run migrations
+```bash
+npm run start:dev
+```
+
+### 6. Run migrations
 
 ```bash
 npm run migration:run
 ```
 
-### 6. Access the API documentation
+### 7. Access the API documentation
 
 ```
 http://localhost:3000/docs
@@ -83,20 +88,18 @@ http://localhost:3000/docs
 
 ## 🌱 Environment Variables
 
-Copy `.env.example` to `.env` and fill in the values:
+This project uses two separate environment files:
+
+- **`.env`** — Application configuration (NestJS)
+- **`.env.docker`** — Docker infrastructure configuration
+
+### `.env`
 
 ```bash
 # Application
 NODE_ENV=development
 PORT=3000
 CORS_ORIGIN=http://localhost:3000
-
-# PostgreSQL Container
-CONTAINER_NAME=ticket-system-api-postgres
-POSTGRES_DB=ticket_system
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=your_secure_password
-POSTGRES_PORT=5432
 
 # Database
 DATABASE_HOST=localhost
@@ -112,6 +115,28 @@ JWT_AUDIENCE=http://localhost:3000
 JWT_ISSUER=http://localhost:3000
 JWT_ACCESS_TOKEN_TTL=3600
 JWT_REFRESH_TOKEN_TTL=604800
+
+# Rate Limiting
+THROTTLE_TTL=60000
+THROTTLE_LIMIT=60
+```
+
+### `.env.docker`
+
+```bash
+# PostgreSQL Container
+CONTAINER_NAME=ticket-system-api-postgres
+POSTGRES_DB=ticket_system
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=your_secure_password
+POSTGRES_PORT=5432
+
+# PostgreSQL Test Container
+TEST_CONTAINER_NAME=ticket-system-api-postgres-test
+TEST_POSTGRES_DB=ticket_system_test
+TEST_POSTGRES_USER=postgres
+TEST_POSTGRES_PASSWORD=postgres
+TEST_POSTGRES_PORT=5436
 ```
 
 ---
@@ -162,14 +187,27 @@ All routes are protected by default. Use `@Public()` to mark public routes.
 ## 📜 Available Scripts
 
 ```bash
-npm run dev               # Start Docker + application in watch mode
-npm run build             # Build the application
+# Application
+npm run start:dev          # Start application in watch mode
+npm run build              # Build the application
+
+# Migrations
 npm run migration:generate # Generate a new migration
-npm run migration:run     # Run pending migrations
-npm run migration:revert  # Revert last migration
-npm run docker:up         # Start PostgreSQL container
-npm run docker:down       # Stop and remove PostgreSQL container
+npm run migration:run      # Run pending migrations
+npm run migration:revert   # Revert last migration
+
+# Tests
+npm run test               # Unit tests
+npm run test:cov           # Unit tests with coverage
+npm run test:e2e           # E2E tests (CI — requires external database)
+npm run test:e2e:local     # E2E tests (local — starts test container automatically)
 ```
+
+> **Infrastructure** (Docker) is managed directly via terminal, not through npm scripts:
+> ```bash
+> docker compose up -d    # Start database
+> docker compose down     # Stop database
+> ```
 
 ---
 
@@ -206,7 +244,10 @@ npm run test
 # Unit tests with coverage
 npm run test:cov
 
-# E2E tests
+# E2E tests (local — starts and stops the test container automatically)
+npm run test:e2e:local
+
+# E2E tests (CI — database provided externally)
 npm run test:e2e
 ```
 
